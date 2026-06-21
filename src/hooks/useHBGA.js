@@ -520,6 +520,11 @@ export function useHBGA() {
     generateNewPool(40);
   }, []);
 
+  // Reset comparison data when configurations change to avoid stale benchmark outputs
+  useEffect(() => {
+    setComparisonData(null);
+  }, [poolSize, teamSize, roleRequirements, maxSeedPool, popSize, generations, crossoverRate, mutationRate, weights]);
+
   return {
     candidatePool,
     generateNewPool,
