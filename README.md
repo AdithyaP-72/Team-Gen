@@ -1,6 +1,6 @@
-# HBGA Solver Platform
+# Team Combination Generator Platform
 
-A premium, interactive web-based simulation platform showcasing a **Hybrid Backtracking and Genetic Algorithm (HBGA)** to solve the constrained team formation problem. 
+A interactive web-based simulation platform showcasing a Hybrid Backtracking and Genetic Algorithm approach to solve the constrained team formation problem. 
 
 The application decouples hard constraint satisfaction from continuous global optimization to guarantee 100% feasible, highly optimized student/candidate teams.
 
