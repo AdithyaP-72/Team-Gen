@@ -9,35 +9,12 @@ import {
   Cpu, 
   Dna, 
   Binary, 
-  Award, 
-  BookOpen, 
-  TrendingUp, 
-  Sparkles, 
-  HelpCircle, 
-  ArrowRight,
-  ShieldCheck,
-  ChevronRight
+  ShieldCheck
 } from "lucide-react";
 
 export default function App() {
   const hbga = useHBGA();
-  const [activeTab, setActiveTab] = useState("simulation"); // simulation, inspection, comparison, academic
-  const [activeFaq, setActiveFaq] = useState(null);
-
-  const faqs = [
-    {
-      q: "Q1: If Phase 1 finds all valid solutions when the space is small, and you only run the GA when the space is large, aren't you running the GA exactly when Phase 1 is most likely to time out or run out of memory?",
-      a: "No, because we enforce a fail-fast generation threshold in Phase 1 backtracking (MAX_SEED_POOL cap). As soon as the backtracking algorithm discovers P (Population Size) valid structural seeds, it pauses execution and hands them over to Phase 2. This guarantees that Phase 1 never hits its worst-case combinatorial complexity, protecting memory and responsiveness."
-    },
-    {
-      q: "Q2: What happens if a candidate can play multiple roles? How does your Bitmask or Hash Set handle polyvalent individuals?",
-      a: "Currently, our model enforces a strict singular primary role mapping to minimize state-space complexity. To handle multi-role candidates, we can transition the role property into a bitmask or set. The pruning function can_extend would then compute a maximum bipartite matching or use Hall's Marriage Theorem to verify if the remaining slots can satisfy the outstanding roles."
-    },
-    {
-      q: "Q3: Your Time Complexity claim for Phase 1 is O(F · K), where F is the feasible space. Is that an accurate bound for the search process?",
-      a: "No, F · K is the leaf-node collection cost. The search complexity is bounded by O(∏_{i=1}^K N_i), where N_i is the remaining pool size of candidates holding the missing required roles at depth i. Our pruning lookahead function guarantees that the search branch terminates immediately when the lookahead detects that the remaining slots cannot satisfy the unfulfilled roles."
-    }
-  ];
+  const [activeTab, setActiveTab] = useState("simulation"); // simulation, inspection, comparison
 
   return (
     <div className="min-h-screen bg-[#070b13] text-slate-100 flex flex-col antialiased">
@@ -91,16 +68,6 @@ export default function App() {
             }`}
           >
             Benchmarks
-          </button>
-          <button
-            onClick={() => setActiveTab("academic")}
-            className={`px-4 py-1.5 rounded-lg text-xs font-medium font-mono transition duration-200 ${
-              activeTab === "academic" 
-                ? "bg-slate-850 text-white" 
-                : "text-slate-400 hover:text-slate-200"
-            }`}
-          >
-            Viva Guide
           </button>
         </div>
       </header>
@@ -217,96 +184,6 @@ export default function App() {
               roleRequirements={hbga.roleRequirements}
               weights={hbga.weights}
             />
-          )}
-
-          {activeTab === "academic" && (
-            <div className="flex flex-col gap-6">
-              {/* Header Box */}
-              <div className="glass-panel rounded-2xl p-6 flex items-start gap-4">
-                <div className="w-12 h-12 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center shrink-0">
-                  <BookOpen className="w-6 h-6 text-blue-400" />
-                </div>
-                <div className="flex flex-col gap-1">
-                  <h3 className="text-lg font-semibold text-slate-100">Academic Dossier & Viva Preparation</h3>
-                  <p className="text-xs text-slate-400 leading-relaxed font-sans mt-0.5">
-                    This hybrid paradigm decouples hard constraint satisfaction (Phase 1) from continuous optimization (Phase 2), 
-                    resolving the mathematical limitations of pure GAs. Below is the theoretical mapping and typical evaluator questions.
-                  </p>
-                </div>
-              </div>
-
-              {/* Hybrid Architecture Breakdown */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-slate-900/60 border border-slate-850 rounded-xl p-5 flex flex-col gap-3">
-                  <h4 className="text-sm font-semibold text-slate-200 font-sans flex items-center gap-1.5">
-                    <Binary className="w-4.5 h-4.5 text-blue-400" />
-                    Phase 1: Deterministic Backtracking Filter
-                  </h4>
-                  <p className="text-xs text-slate-400 leading-relaxed">
-                    Uses backtracking to traverse the candidate combinations tree. Implements branch-and-bound pruning lookaheads to cut off branches missing required roles.
-                  </p>
-                  <ul className="text-[11px] text-slate-400 list-disc list-inside space-y-1.5 font-mono pt-1">
-                    <li>Decision variables: Candidate selection vector</li>
-                    <li>Pruning triggers: Slot role deficits</li>
-                    <li>Early stopping: MAX_SEED_POOL cap</li>
-                  </ul>
-                </div>
-
-                <div className="bg-slate-900/60 border border-slate-850 rounded-xl p-5 flex flex-col gap-3">
-                  <h4 className="text-sm font-semibold text-slate-200 font-sans flex items-center gap-1.5">
-                    <Dna className="w-4.5 h-4.5 text-purple-400" />
-                    Phase 2: Genetic Global Optimizer
-                  </h4>
-                  <p className="text-xs text-slate-400 leading-relaxed">
-                    Initial population is seeded with 100% valid backtracking combinations. Operators are designed to preserve feasibility, preventing invalid chromosomal drift.
-                  </p>
-                  <ul className="text-[11px] text-slate-400 list-disc list-inside space-y-1.5 font-mono pt-1">
-                    <li>Selection: Tournament (size T=3)</li>
-                    <li>Crossover: Set-based Uniform Swap</li>
-                    <li>Mutation: Feasibility-Preserving Swap</li>
-                  </ul>
-                </div>
-              </div>
-
-              {/* Clickable FAQ Accordion */}
-              <div className="flex flex-col gap-3">
-                <h3 className="text-sm font-semibold tracking-wider uppercase text-slate-400 font-mono">
-                  Evaluator Viva Questions (Expand to reveal)
-                </h3>
-                
-                <div className="flex flex-col gap-2">
-                  {faqs.map((faq, idx) => {
-                    const isOpen = activeFaq === idx;
-                    return (
-                      <div 
-                        key={idx} 
-                        className={`border rounded-xl transition-all duration-300 ${
-                          isOpen 
-                            ? "bg-slate-900/70 border-blue-500/35" 
-                            : "bg-slate-900/40 border-slate-850/80 hover:border-slate-800"
-                        }`}
-                      >
-                        <button
-                          onClick={() => setActiveFaq(isOpen ? null : idx)}
-                          className="w-full text-left p-4 flex justify-between items-center gap-4"
-                        >
-                          <span className="text-xs font-semibold text-slate-200 leading-snug">{faq.q}</span>
-                          <ChevronRight className={`w-4 h-4 text-slate-400 transition-transform duration-300 shrink-0 ${isOpen ? "rotate-90 text-blue-400" : ""}`} />
-                        </button>
-                        
-                        {isOpen && (
-                          <div className="px-4 pb-4 border-t border-slate-850/45 pt-3">
-                            <p className="text-[11px] leading-relaxed text-slate-400 font-sans whitespace-pre-line">
-                              {faq.a}
-                            </p>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
           )}
         </div>
       </main>
